@@ -14,12 +14,13 @@ public class ChessBoard : MonoBehaviour {
 
     private const int TILE_COUNT_X = 8;
     private const int TILE_COUNT_Y = 8;
-    
+    private const float TILE_SIZE = 0.3f;
+
     private GameObject[,] tiles;
     private ChessPiece[,] chessPieces;
-    
+
     private void Awake() {
-        GenerateTiles(1);
+        GenerateTiles(TILE_SIZE);
         SpawnPieces();
         PositionPieces();
     }
@@ -28,10 +29,10 @@ public class ChessBoard : MonoBehaviour {
     /// generate tiles
     /// </summary>
     /// <param name="tileSize">size of one square tile</param>
-    private void GenerateTiles(float tileSize) {
+    private void GenerateTiles( float tileSize ) {
         tiles = new GameObject[TILE_COUNT_X, TILE_COUNT_Y];
         for (int x = 0; x < TILE_COUNT_X; x++) {
-            for(int y = 0; y < TILE_COUNT_Y; y++) {
+            for (int y = 0; y < TILE_COUNT_Y; y++) {
                 tiles[x, y] = GenerateSingleTile(x, y, tileSize);
             }
         }
@@ -44,7 +45,7 @@ public class ChessBoard : MonoBehaviour {
     /// <param name="y">position y</param>
     /// <param name="tileSize">size of one square tile</param>
     /// <returns></returns>
-    private GameObject GenerateSingleTile(int x, int y, float tileSize) {
+    private GameObject GenerateSingleTile( int x, int y, float tileSize ) {
         GameObject tile = new GameObject("x:{" + x + "}, y:{" + y + "}");
         tile.transform.parent = transform;
 
@@ -54,11 +55,11 @@ public class ChessBoard : MonoBehaviour {
 
         Vector3[] vertices = new Vector3[4];
         vertices[0] = new Vector3(x * tileSize, 1, y * tileSize);
-        vertices[1] = new Vector3(x * tileSize, 1, (y+1) * tileSize);
-        vertices[2] = new Vector3((x+1) * tileSize, 1, y * tileSize);
-        vertices[3] = new Vector3((x+1) * tileSize, 1, (y+1) * tileSize);
+        vertices[1] = new Vector3(x * tileSize, 1, (y + 1) * tileSize);
+        vertices[2] = new Vector3((x + 1) * tileSize, 1, y * tileSize);
+        vertices[3] = new Vector3((x + 1) * tileSize, 1, (y + 1) * tileSize);
 
-        int[] tris = new int[] {0, 1, 2, 1, 3, 2 };
+        int[] tris = new int[] { 0, 1, 2, 1, 3, 2 };
 
         mesh.vertices = vertices;
         mesh.triangles = tris;
@@ -73,6 +74,9 @@ public class ChessBoard : MonoBehaviour {
     /// spawn all pieces
     /// </summary>
     private void SpawnPieces() {
+
+        var temp = new Vector3();
+
         chessPieces = new ChessPiece[TILE_COUNT_X, TILE_COUNT_Y];
 
         chessPieces[0, 0] = SpawnSinglePiece(ChessPieceType.Rook, Team.White);
@@ -83,8 +87,25 @@ public class ChessBoard : MonoBehaviour {
         chessPieces[5, 0] = SpawnSinglePiece(ChessPieceType.Bishop, Team.White);
         chessPieces[6, 0] = SpawnSinglePiece(ChessPieceType.Knight, Team.White);
         chessPieces[7, 0] = SpawnSinglePiece(ChessPieceType.Rook, Team.White);
-        for(int i=0; i<TILE_COUNT_X; i++) {
+
+        for(int j = 0; j < TILE_COUNT_X; j++) {
+            temp = chessPieces[j, 0].transform.localScale;
+            temp.x *= TILE_SIZE;
+            temp.y *= TILE_SIZE;
+            temp.z *= TILE_SIZE;
+
+            chessPieces[j, 0].transform.localScale = temp;
+        }
+
+        for (int i = 0; i < TILE_COUNT_X; i++) {
             chessPieces[i, 1] = SpawnSinglePiece(ChessPieceType.Pawn, Team.White);
+
+            temp = chessPieces[i, 1].transform.localScale;
+            temp.x *= TILE_SIZE;
+            temp.y *= TILE_SIZE;
+            temp.z *= TILE_SIZE;
+
+            chessPieces[i, 1].transform.localScale = temp;
         }
 
         chessPieces[0, 7] = SpawnSinglePiece(ChessPieceType.Rook, Team.Black);
@@ -95,8 +116,25 @@ public class ChessBoard : MonoBehaviour {
         chessPieces[5, 7] = SpawnSinglePiece(ChessPieceType.Bishop, Team.Black);
         chessPieces[6, 7] = SpawnSinglePiece(ChessPieceType.Knight, Team.Black);
         chessPieces[7, 7] = SpawnSinglePiece(ChessPieceType.Rook, Team.Black);
+
+        for (int j = 0; j < TILE_COUNT_X; j++) {
+            temp = chessPieces[j, 7].transform.localScale;
+            temp.x *= TILE_SIZE;
+            temp.y *= TILE_SIZE;
+            temp.z *= TILE_SIZE;
+
+            chessPieces[j, 7].transform.localScale = temp;
+        }
+
         for (int i = 0; i < TILE_COUNT_X; i++) {
             chessPieces[i, 6] = SpawnSinglePiece(ChessPieceType.Pawn, Team.Black);
+
+            temp = chessPieces[i, 6].transform.localScale;
+            temp.x *= TILE_SIZE;
+            temp.y *= TILE_SIZE;
+            temp.z *= TILE_SIZE;
+
+            chessPieces[i, 6].transform.localScale = temp;
         }
     }
 
@@ -104,11 +142,11 @@ public class ChessBoard : MonoBehaviour {
     /// set position of pieces on chess board
     /// </summary>
     private void PositionPieces() {
-        for (int x=0; x<TILE_COUNT_X; x++) {
-            for (int y=0; y<TILE_COUNT_Y; y++) {
-                if(chessPieces[x, y] != null) {
+        for (int x = 0; x < TILE_COUNT_X; x++) {
+            for (int y = 0; y < TILE_COUNT_Y; y++) {
+                if (chessPieces[x, y] != null) {
                     PositionSinglePiece(x, y);
-                }  
+                }
             }
         }
     }
@@ -118,17 +156,17 @@ public class ChessBoard : MonoBehaviour {
     /// </summary>
     /// <param name="x">x coordinate</param>
     /// <param name="y">y coordinate</param>
-    private void PositionSinglePiece(int x, int y) {
+    private void PositionSinglePiece( int x, int y ) {
         chessPieces[x, y].setCurrentPositionX(x);
         chessPieces[x, y].setCurrentPositionY(y);
         chessPieces[x, y].transform.position = GetTileCenter(x, y);
     }
 
-    private Vector3 GetTileCenter(int x, int y) {
-        return new Vector3(x, 1, y) + new Vector3(0.5f, 0, 0.5f);
+    private Vector3 GetTileCenter( int x, int y ) {
+        return new Vector3(x * TILE_SIZE, 1, y * TILE_SIZE) + new Vector3(TILE_SIZE / 2, 0, TILE_SIZE / 2);
     }
 
-    private ChessPiece SpawnSinglePiece(ChessPieceType type, Team team) {
+    private ChessPiece SpawnSinglePiece( ChessPieceType type, Team team ) {
         ChessPiece piece = Instantiate(chessPiecesObjects[(int)type - 1], transform).GetComponent<ChessPiece>();
 
         piece.setType(type);
